@@ -1,0 +1,104 @@
+week 4 assignment DDP presentation 1
+========================================================
+author: Satish Chand Sharma
+date: 05/05/2020
+autosize: true
+
+First Slide
+========================================================
+
+# Overview:
+
+This application uses the data (ToothGrowth) provided by R datasets. It provides the exploratory analysis of the data for different doses and different supplements through a interactive histogram and a bar chart using plotly.
+
+Second Slide
+=========================================================
+
+# Description:
+
+The data is about the  response of different doses of vitamin C given to the 60 guinea pigs through two different supplements in the growth of length of odontoblasts (cells responsible for tooth growth). Each animal received one of three dose levels of vitamin C (0.5, 1, and 2 mg/day) by one of two delivery methods i.e supplements, orange juice or ascorbic acid (a form of vitamin C and coded as VC).The data frame has 60 observations and 3 variables.
+
+The source of the data frame as given in R help is C. I. Bliss (1952): The Statistics of Bioassay. Academic Press.
+
+Third Slide (With Code for Ui.R)
+========================================================
+
+```{r , echo = FALSE}
+library(shiny)
+library(plotly)
+# Define UI for application that draws a histogram
+shinyUI(fluidPage(
+
+    # Application title
+    headerPanel("Effect of Vitamin C on Tooth Growth in Guinea Pigs"),
+
+    # Sidebar with a slider input for number of doses
+    sidebarLayout(
+        sidebarPanel(
+            selectInput("supp","Supplement Type",
+                        choices = c("VC","OJ")),
+            
+            sliderInput("doses",
+                        "Dose Levels of Vitamin C:",
+                        min = 0,
+                        max = 2,
+                        value=1,
+                        step=.5)
+                               
+           
+        ),
+  
+        # Show a plot of the generated distribution
+        mainPanel(
+            h3("Graphical Presentation"),
+            plotOutput("hist"),
+           h3("Graphical Presentation Using plotly"),
+            plotlyOutput("bar")
+        )
+    )
+))
+```
+Fourth Slide (with code for server.R)
+====================================================================
+
+```{r}
+library(shiny)
+
+library(plotly)
+
+df<-ToothGrowth
+# Define server logic required to draw a histogram
+shinyServer(function(input, output) {
+
+    output$hist <- renderPlot({
+        df<-df[which(df$supp==input$supp & df$dose==input$doses), ]
+         hist(df$len,xlab = "Tooth Length",col = "yellow", main="Histogram")
+ 
+    })     
+       
+   output$bar <- renderPlotly({
+        
+      df <- df[ which(df$supp ==input$supp & df$dose==input$doses), ]
+      y <- list(title = "Tooth Length")
+      x<-list(title="Observation Count")
+     
+       fig<-plot_ly(y=~df$len, type = 'bar',
+                mode = 'markers',color="orange")
+       fig <- fig %>% layout(xaxis = x, yaxis = y)      
+      fig        
+        
+    })
+
+})
+```
+
+```
+
+Fifth Slide 
+========================================================
+
+Interactive graphs are on my shinyapp account
+https://satish-sharma-stat.shinyapps.io/myapp4/
+
+Complete problem description a code files are on github also
+https://github.com/Satish-Sharma-Stat/Week-4-assignment-DDP/tree/master
